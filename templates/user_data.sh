@@ -38,7 +38,7 @@ EOF
 fi
 
 # Disable ingest on local exporter
-if [ "true" == "${data}" ]; then
+if [ "false" == "${data}" ]; then
 cat <<'EOF' >>/etc/elasticsearch/elasticsearch.yml
 xpack.monitoring.exporters.my_local:
   type: local
