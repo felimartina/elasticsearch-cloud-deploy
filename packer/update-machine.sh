@@ -1,9 +1,9 @@
 #!/bin/bash
 
 sudo apt-get update
-sudo rm /boot/grub/menu.lst
+#sudo rm /boot/grub/menu.lst
 
-sudo apt-get upgrade -y
+#sudo apt-get upgrade -y
 sudo apt-get install -y software-properties-common git python-dev htop ntp jq apt-transport-https
 
 # Disable daily apt unattended updates.
