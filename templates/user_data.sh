@@ -37,6 +37,15 @@ discovery:
 EOF
 fi
 
+# Disable ingest on local exporter
+if [ "true" == "${data}" ]; then
+cat <<'EOF' >>/etc/elasticsearch/elasticsearch.yml
+xpack.monitoring.exporters.my_local:
+  type: local
+  use_ingest: false
+EOF
+fi
+
 # Azure doesn't have a proper discovery plugin, hence we are going old-school and relying on scaleset name prefixes
 if [ "${cloud_provider}" == "azure" ]; then
         cat <<'EOF' >>/etc/elasticsearch/elasticsearch.yml
