@@ -12,17 +12,20 @@ aws ec2 create-key-pair --key-name elasticsearch --query 'KeyMaterial' --output 
 
 ## VPC
 
-Create a VPC, or use existing. You will need the VPC ID and private subnets IDs in it. 
+This module automatically creates a VPC and places all resources in the private subnets. Only LoadBalancer will run on the public subnet.
+You will need to specify variables of your preferred VPC configuration such as CIDR ranges, and availability zones to use.
 
 ## Configurations
 
 Edit `variables.tf` to specify the following:
 
 * `aws_region` - the region where to launch the cluster in.
-* `availability_zones` - at least 2 availability zones in that region.
 * `es_cluster` - the name of the Elasticsearch cluster to launch.
 * `key_name` - the name of the key to use - that key needs to be handy so you can access the machines if needed.
-* `vpc_id` - the ID of the VPC to launch the cluster in.
+* `vpc_cidr` - CIDR range for the vpc that is going to be created. Defaults to 10.0.0.0/16.
+* `vpc_private_subnets` - CIDR ranges for the private subnets to create. For example: ["10.0.1.0/24", "10.0.2.0/24"]. Number of CIDRs should match number of `availability_zones` to use.
+* `vpc_public_subnets` - CIDR ranges for the public subnets to create. For example: ["10.0.101.0/24", "10.0.102.0/24"]. Number of CIDRs should match number of `availability_zones` to use.
+* `availability_zones` - at least 2 availability zones in that region.
 * `vpc_subnets` - the private subnet IDs within the VPC. The order in which you type these need to match the order of their availability zones as typed in `availability_zones` above.
 
 The rest of the configurations are mostly around cluster topology and  machine types and sizes.
@@ -31,14 +34,14 @@ The rest of the configurations are mostly around cluster topology and  machine t
 
 Two modes of deployment are supported:
 
-* A recommended configuration, with dedicated master-eligible nodes, data nodes, and client nodes. This is a production-ready and best-practice configuration. See more details in the [official documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html). 
+* A recommended configuration, with dedicated master-eligible nodes, data nodes, and client nodes. This is a production-ready and best-practice configuration. See more details in the [official documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html).
 * Single node mode - mostly useful for experimentation
 
 At this point we consider the role `ingest` as unanimous with `data`, so all data nodes are also ingest nodes.
 
 The default mode is the single-node mode. To change it to the recommended configuration, edit `variables.tf` and set number of master nodes to 3, data nodes to at least 2, and client nodes to at least 1.
 
-All nodes with the `client` role will be attached to an ELB, so access to all client nodes can be done via the DNS it exposes. 
+All nodes with the `client` role will be attached to an ELB, so access to all client nodes can be done via the DNS it exposes.
 
 ### Security groups
 

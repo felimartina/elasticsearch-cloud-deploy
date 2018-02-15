@@ -7,20 +7,33 @@ variable "aws_region" {
   type = "string"
 }
 
-variable "vpc_id" {
-  description = "VPC ID to create the Elasticsearch cluster in"
-  type = "string"
+variable "vpc_cidr" {
+  description = "VPC CIDR to use. Defaults to 10.0.0.0/16"
+  type        = "string"
+  default     = "10.0.0.0/16"
+}
+
+variable "vpc_private_subnets" {
+  description = "Private subnets cidrs to create."
+  type        = "list"
+  default     = ["10.0.1.0/24", "10.0.2.0/24"]
+}
+
+variable "vpc_public_subnets" {
+  description = "Public subnets cidrs to create."
+  type        = "list"
+  default     = ["10.0.101.0/24", "10.0.102.0/24"]
 }
 
 variable "availability_zones" {
-  type = "list"
+  type        = "list"
   description = "AWS region to launch servers; if not set the available zones will be detected automatically"
-  default = []
+  default     = []
 }
 
 variable "key_name" {
   description = "Key name to be used with the launched EC2 instances."
-  default = "elasticsearch"
+  default     = "elasticsearch"
 }
 
 variable "environment" {
@@ -28,18 +41,18 @@ variable "environment" {
 }
 
 variable "data_instance_type" {
-  type = "string"
+  type    = "string"
   default = "c4.2xlarge"
 }
 
 variable "master_instance_type" {
-  type = "string"
+  type    = "string"
   default = "m4.large"
 }
 
 variable "elasticsearch_volume_size" {
-  type = "string"
-  default = "100" # gb
+  type    = "string"
+  default = "100"    # gb
 }
 
 variable "volume_name" {
@@ -60,12 +73,12 @@ variable "elasticsearch_logs_dir" {
 
 # default elasticsearch heap size
 variable "data_heap_size" {
-  type = "string"
+  type    = "string"
   default = "7g"
 }
 
 variable "master_heap_size" {
-  type = "string"
+  type    = "string"
   default = "2g"
 }
 
@@ -95,6 +108,7 @@ variable "monitoring_enabled" {
 variable "client_user" {
   default = "exampleuser"
 }
+
 variable "client_pwd" {
   default = "changeme"
 }
