@@ -95,8 +95,8 @@ resource "aws_security_group" "elasticsearch_public_lb_security_group" {
   }
 
   ingress {
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow HTTP access to 8080 for Kibana from the internet"
