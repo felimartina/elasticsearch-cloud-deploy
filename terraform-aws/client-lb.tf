@@ -1,3 +1,5 @@
+
+
 resource "aws_lb" "es_client_lb" {
   // Only create an ELB if it's not a single-node configuration
   count = "${var.masters_count == "0" && var.datas_count == "0" ? "0" : "1"}"
@@ -14,17 +16,6 @@ resource "aws_lb" "es_client_lb" {
   }
 }
 
-resource "aws_lb_listener" "kibana" {
-  load_balancer_arn = "${aws_lb.es_client_lb.arn}"
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    target_group_arn = "${aws_lb_target_group.kibana.arn}"
-    type             = "forward"
-  }
-}
-
 resource "aws_lb_listener" "graphana" {
   load_balancer_arn = "${aws_lb.es_client_lb.arn}"
   port              = "3000"
@@ -32,17 +23,6 @@ resource "aws_lb_listener" "graphana" {
 
   default_action {
     target_group_arn = "${aws_lb_target_group.graphana.arn}"
-    type             = "forward"
-  }
-}
-
-resource "aws_lb_listener" "es" {
-  load_balancer_arn = "${aws_lb.es_client_lb.arn}"
-  port              = "9200"
-  protocol          = "HTTP"
-
-  default_action {
-    target_group_arn = "${aws_lb_target_group.es.arn}"
     type             = "forward"
   }
 }
@@ -59,6 +39,17 @@ resource "aws_autoscaling_attachment" "graphana" {
   alb_target_group_arn   = "${aws_lb_target_group.graphana.arn}"
 }
 
+resource "aws_lb_listener" "es" {
+  load_balancer_arn = "${aws_lb.es_client_lb.arn}"
+  port              = "9200"
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = "${aws_lb_target_group.es.arn}"
+    type             = "forward"
+  }
+}
+
 resource "aws_lb_target_group" "es" {
   name     = "${format("%s-client-lb-tg-es", var.es_cluster)}"
   port     = 9200
@@ -69,6 +60,17 @@ resource "aws_lb_target_group" "es" {
 resource "aws_autoscaling_attachment" "es" {
   autoscaling_group_name = "${aws_autoscaling_group.client_nodes.id}"
   alb_target_group_arn   = "${aws_lb_target_group.es.arn}"
+}
+
+resource "aws_lb_listener" "kibana" {
+  load_balancer_arn = "${aws_lb.es_client_lb.arn}"
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = "${aws_lb_target_group.kibana.arn}"
+    type             = "forward"
+  }
 }
 
 resource "aws_lb_target_group" "kibana" {
