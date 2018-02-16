@@ -26,9 +26,15 @@ variable "vpc_public_subnets" {
 }
 
 variable "availability_zones" {
-  type        = "list"
   description = "AWS region to launch servers; if not set the available zones will be detected automatically"
+  type        = "list"
   default     = []
+}
+
+variable "admin_cidrs" {
+  description = "List of CIDRs to whitelist for SSH access"
+  type    = "list"
+  default = []
 }
 
 variable "key_name" {
