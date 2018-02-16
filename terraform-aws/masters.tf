@@ -11,7 +11,7 @@ data "template_file" "master_userdata_script" {
     es_environment          = "${var.environment}-${var.es_cluster}"
     security_groups         = "${aws_security_group.elasticsearch_security_group.id}"
     aws_region              = "${var.aws_region}"
-    availability_zones      = "${join(",", coalescelist(var.availability_zones, data.aws_availability_zones.available.names))}"
+    availability_zones      = "${join(",",var.availability_zones)}"
     minimum_master_nodes    = "${format("%d", var.masters_count / 2 + 1)}"
     master                  = "true"
     data                    = "false"
@@ -47,7 +47,7 @@ resource "aws_autoscaling_group" "master_nodes" {
   force_delete = true
   launch_configuration = "${aws_launch_configuration.master.id}"
 
-  vpc_zone_identifier = ["${data.aws_subnet_ids.selected.ids}"]
+  vpc_zone_identifier = ["${module.vpc.private_subnets}"]
 
   tag {
     key                 = "Name"
