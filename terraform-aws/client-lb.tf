@@ -5,7 +5,7 @@ resource "aws_lb" "es_client_lb" {
   count = "${var.masters_count == "0" && var.datas_count == "0" ? "0" : "1"}"
 
   name               = "${format("%s-client-lb", var.es_cluster)}"
-  security_groups    = ["${aws_security_group.elasticsearch_clients_security_group.id}"]
+  security_groups    = ["${aws_security_group.elasticsearch_public_lb_security_group.id}"]
   subnets            = ["${module.vpc.public_subnets}"]
   internal           = false
   load_balancer_type = "application"
