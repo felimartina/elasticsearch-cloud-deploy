@@ -18,7 +18,9 @@ aws iam create-role --role-name packer --assume-role-policy-document '{
   "Version": "2012-10-17",
   "Statement": {
     "Effect": "Allow",
-    "Principal": {"Service": "ec2.amazonaws.com"},
+    "Principal": {
+      "Service": "ec2.amazonaws.com"
+    },
     "Action": "sts:AssumeRole",
     "Sid": ""
   }
@@ -49,7 +51,7 @@ Response will look something like this:
 }
 ```
 
-Follow up by execting the following
+Follow up by executing the following
 
 ```bash
 aws iam create-instance-profile --instance-profile-name packer

@@ -4,13 +4,21 @@ module "vpc" {
   name = "elasticsearch-${var.es_cluster}-vpc"
   cidr = "${var.vpc_cidr}"
 
-  azs             = ["${var.availability_zones}"]
-  private_subnets = ["${var.vpc_private_subnets}"]
-  public_subnets = ["${var.vpc_public_subnets}"]
-
+  azs                = ["${var.availability_zones}"]
+  private_subnets    = ["${var.vpc_private_subnets}"]
+  public_subnets     = ["${var.vpc_public_subnets}"]
   enable_nat_gateway = true
   enable_vpn_gateway = true
   single_nat_gateway = true
+
+  private_subnet_tags = {
+    Layer = "Private"
+  }
+
+  public_subnet_tags = {
+    Layer = "Public"
+  }
+
   tags = {
     Name        = "${var.es_cluster}-vpc"
     Environment = "${var.environment}"
