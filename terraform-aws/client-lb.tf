@@ -1,5 +1,3 @@
-
-
 resource "aws_lb" "es_client_lb" {
   // Only create an ELB if it's not a single-node configuration
   count = "${var.masters_count == "0" && var.datas_count == "0" ? "0" : "1"}"
