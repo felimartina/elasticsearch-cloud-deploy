@@ -12,11 +12,11 @@ module "vpc" {
   single_nat_gateway = true
 
   private_subnet_tags = {
-    Layer = "Private"
+    Layer = "private"
   }
 
   public_subnet_tags = {
-    Layer = "Public"
+    Layer = "public"
   }
 
   tags = {

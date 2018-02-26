@@ -39,7 +39,6 @@ variable "admin_cidrs" {
 
 variable "key_name" {
   description = "Key name to be used with the launched EC2 instances."
-  default     = "elasticsearch"
 }
 
 variable "environment" {

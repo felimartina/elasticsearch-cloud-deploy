@@ -87,3 +87,61 @@ resource "aws_autoscaling_group" "data_nodes" {
     create_before_destroy = true
   }
 }
+
+resource "aws_autoscaling_policy" "data_nodes_scale_out" {
+  adjustment_type        = "ChangeInCapacity"
+  autoscaling_group_name = "${aws_autoscaling_group.data_nodes.name}"
+  cooldown               = "60"                                                          // Give it 60 secods to the alarm to cool down
+  name                   = "elasticsearch-${var.es_cluster}-data-nodes-scale-out-policy"
+  policy_type            = "SimpleScaling"
+  scaling_adjustment     = 1                                                             // Add 1 instance
+}
+
+resource "aws_autoscaling_policy" "data_nodes_scale_in" {
+  adjustment_type        = "ChangeInCapacity"
+  autoscaling_group_name = "${aws_autoscaling_group.data_nodes.name}"
+  cooldown               = "60"                                                         // Give it 60 secods to the alarm to cool down
+  name                   = "elasticsearch-${var.es_cluster}-data-nodes-scale-in-policy"
+  policy_type            = "SimpleScaling"
+  scaling_adjustment     = -1                                                           // Add 1 instance
+}
+
+## Creates CloudWatch monitor
+resource "aws_cloudwatch_metric_alarm" "data_nodes_monitor_scale_out" {
+  actions_enabled     = true
+  alarm_actions       = ["${aws_autoscaling_policy.data_nodes_scale_out.arn}"]
+  alarm_description   = "Monitors ES data nodes CPU Utilization"
+  alarm_name          = "elasticsearch-${var.es_cluster}-data-nodes-asg-monitor-scale_out"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "300"                                                    // periods of 5 minutes
+  evaluation_periods  = "1"
+  statistic           = "Average"
+  threshold           = "60"
+  treat_missing_data  = "missing"
+
+  dimensions = {
+    "AutoScalingGroupName" = "${aws_autoscaling_group.data_nodes.name}"
+  }
+}
+
+## Creates CloudWatch monitor
+resource "aws_cloudwatch_metric_alarm" "data_nodes_monitor_scale_in" {
+  actions_enabled     = true
+  alarm_actions       = ["${aws_autoscaling_policy.data_nodes_scale_in.arn}"]
+  alarm_description   = "Monitors ES data nodes CPU Utilization"
+  alarm_name          = "elasticsearch-${var.es_cluster}-data-nodes-asg-monitor-scale-in"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "300"                                                    // periods of 5 minutes
+  evaluation_periods  = "1"
+  statistic           = "Average"
+  threshold           = "40"
+  treat_missing_data  = "missing"
+
+  dimensions = {
+    "AutoScalingGroupName" = "${aws_autoscaling_group.data_nodes.name}"
+  }
+}
