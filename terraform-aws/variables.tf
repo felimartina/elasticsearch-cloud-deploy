@@ -50,9 +50,14 @@ variable "data_instance_type" {
   default = "c4.2xlarge"
 }
 
+variable "client_instance_type" {
+  type    = "string"
+  default = "t2.medium"
+}
+
 variable "master_instance_type" {
   type    = "string"
-  default = "m4.large"
+  default = "t2.medium"
 }
 
 variable "elasticsearch_volume_size" {
