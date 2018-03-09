@@ -54,34 +54,17 @@ resource "aws_autoscaling_group" "data_nodes" {
   default_cooldown     = 30
   force_delete         = true
   launch_configuration = "${aws_launch_configuration.data.id}"
+  vpc_zone_identifier  = ["${var.vpc_private_subnet_ids}"]
 
-  vpc_zone_identifier = ["${var.vpc_private_subnet_ids}"]
+  tags = ["${concat(
+    list(
+      map("key", "Name", "value", "${var.es_cluster}-elasticsearch-data-node", "propagate_at_launch", true),
+      map("key", "Role", "value", "data", "propagate_at_launch", true)
+    ),
+    var.global_tags_for_asg)
+  }"]
 
   depends_on = ["aws_autoscaling_group.master_nodes"]
-
-  tag {
-    key                 = "Name"
-    value               = "${format("%s-data-node", var.es_cluster)}"
-    propagate_at_launch = true
-  }
-
-  tag {
-    key                 = "Environment"
-    value               = "${var.environment}"
-    propagate_at_launch = true
-  }
-
-  tag {
-    key                 = "Cluster"
-    value               = "${var.environment}-${var.es_cluster}"
-    propagate_at_launch = true
-  }
-
-  tag {
-    key                 = "Role"
-    value               = "data"
-    propagate_at_launch = true
-  }
 
   lifecycle {
     create_before_destroy = true
@@ -115,7 +98,7 @@ resource "aws_cloudwatch_metric_alarm" "data_nodes_monitor_scale_out" {
   comparison_operator = "GreaterThanOrEqualToThreshold"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = "300"                                                    // periods of 5 minutes
+  period              = "300"                                                              // periods of 5 minutes
   evaluation_periods  = "1"
   statistic           = "Average"
   threshold           = "60"
@@ -135,7 +118,7 @@ resource "aws_cloudwatch_metric_alarm" "data_nodes_monitor_scale_in" {
   comparison_operator = "LessThanOrEqualToThreshold"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
-  period              = "300"                                                    // periods of 5 minutes
+  period              = "300"                                                             // periods of 5 minutes
   evaluation_periods  = "1"
   statistic           = "Average"
   threshold           = "40"

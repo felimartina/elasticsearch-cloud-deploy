@@ -42,8 +42,7 @@ resource "aws_security_group" "elasticsearch_clients_security_group" {
   name        = "elasticsearch-${var.es_cluster}-clients-security-group"
   description = "Allows access to app ports from public subnets"
   vpc_id      = "${var.vpc_id}"
-
-  tags = "${merge(var.global_tags,map("Name","${var.es_cluster}-client-sg"))}"
+  tags        = "${merge(var.global_tags,map("Name","${var.es_cluster}-client-sg"))}"
 
   ingress {
     from_port   = 8080
