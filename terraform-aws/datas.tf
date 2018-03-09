@@ -26,7 +26,7 @@ data "template_file" "data_userdata_script" {
 resource "aws_launch_configuration" "data" {
   name_prefix                 = "elasticsearch-${var.es_cluster}-data-nodes"
   image_id                    = "${data.aws_ami.elasticsearch.id}"
-  instance_type               = "${var.data_instance_type}"
+  instance_type               = "${var.datas_instance_type}"
   security_groups             = ["${aws_security_group.elasticsearch_security_group.id}"]
   associate_public_ip_address = false
   iam_instance_profile        = "${aws_iam_instance_profile.elasticsearch.id}"
@@ -55,7 +55,7 @@ resource "aws_autoscaling_group" "data_nodes" {
   force_delete         = true
   launch_configuration = "${aws_launch_configuration.data.id}"
 
-  vpc_zone_identifier = ["${module.vpc.private_subnets}"]
+  vpc_zone_identifier = ["${var.vpc_private_subnet_ids}"]
 
   depends_on = ["aws_autoscaling_group.master_nodes"]
 

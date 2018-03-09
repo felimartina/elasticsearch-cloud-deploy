@@ -7,22 +7,28 @@ variable "aws_region" {
   type = "string"
 }
 
-variable "vpc_cidr" {
-  description = "VPC CIDR to use. Defaults to 10.0.0.0/16"
-  type        = "string"
-  default     = "10.0.0.0/16"
+variable "global_tags" {
+  type    = "map"
+  default = {}
 }
 
-variable "vpc_private_subnets" {
-  description = "Private subnets cidrs to create."
-  type        = "list"
-  default     = ["10.0.1.0/24", "10.0.2.0/24"]
+variable "vpc_id" {
+  description = "VPC ID."
 }
 
-variable "vpc_public_subnets" {
-  description = "Public subnets cidrs to create."
+variable "vpc_private_subnet_ids" {
+  description = "Private subnets ids to create."
   type        = "list"
-  default     = ["10.0.101.0/24", "10.0.102.0/24"]
+}
+
+variable "vpc_public_subnet_ids" {
+  description = "Public subnets ids."
+  type        = "list"
+}
+
+variable "vpc_public_subnets_cidrs" {
+  description = "Private subnets cidrs (ie. ['10.0.1.0/24', '10.0.1.0/24'])"
+  type        = "list"
 }
 
 variable "availability_zones" {
@@ -45,12 +51,17 @@ variable "environment" {
   default = "default"
 }
 
-variable "data_instance_type" {
+variable "datas_instance_type" {
   type    = "string"
   default = "c4.2xlarge"
 }
 
-variable "master_instance_type" {
+variable "masters_instance_type" {
+  type    = "string"
+  default = "m4.large"
+}
+
+variable "clients_instance_type" {
   type    = "string"
   default = "m4.large"
 }

@@ -29,7 +29,7 @@ resource "aws_launch_configuration" "single_node" {
 
   name_prefix                 = "elasticsearch-${var.es_cluster}-single-node"
   image_id                    = "${data.aws_ami.kibana_client.id}"
-  instance_type               = "${var.data_instance_type}"
+  instance_type               = "${var.datas_instance_type}"
   security_groups             = ["${aws_security_group.elasticsearch_security_group.id}", "${aws_security_group.elasticsearch_clients_security_group.id}"]
   associate_public_ip_address = true
   iam_instance_profile        = "${aws_iam_instance_profile.elasticsearch.id}"
@@ -59,7 +59,7 @@ resource "aws_autoscaling_group" "single_node" {
   force_delete         = true
   launch_configuration = "${aws_launch_configuration.single_node.id}"
 
-  vpc_zone_identifier = ["${concat(module.vpc.public_subnets, module.vpc.private_subnets)}"]
+  vpc_zone_identifier = ["${concat(var.vpc_public_subnet_ids, var.vpc_private_subnet_ids)}"]
 
   tag {
     key                 = "Name"

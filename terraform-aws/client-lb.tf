@@ -4,14 +4,12 @@ resource "aws_lb" "es_client_lb" {
 
   name               = "${format("%s-client-lb", var.es_cluster)}"
   security_groups    = ["${aws_security_group.elasticsearch_public_lb_security_group.id}"]
-  subnets            = ["${module.vpc.public_subnets}"]
+  subnets            = ["${var.vpc_public_subnet_ids}"]
   internal           = false
   load_balancer_type = "application"
   idle_timeout       = 400
-
-  tags {
-    Name = "${format("%s-client-lb", var.es_cluster)}"
-  }
+  
+  tags = "${merge(var.global_tags,map("Name","${format("%s-client-lb", var.es_cluster)}"))}"
 }
 
 resource "aws_lb_listener" "graphana" {
@@ -29,7 +27,7 @@ resource "aws_lb_target_group" "graphana" {
   name     = "${format("%s-client-lb-tg-graphana", var.es_cluster)}"
   port     = 3000
   protocol = "HTTP"
-  vpc_id   = "${module.vpc.vpc_id}"
+  vpc_id   = "${var.vpc_id}"
 }
 
 resource "aws_autoscaling_attachment" "graphana" {
@@ -52,7 +50,7 @@ resource "aws_lb_target_group" "es" {
   name     = "${format("%s-client-lb-tg-es", var.es_cluster)}"
   port     = 9200
   protocol = "HTTP"
-  vpc_id   = "${module.vpc.vpc_id}"
+  vpc_id   = "${var.vpc_id}"
 }
 
 resource "aws_autoscaling_attachment" "es" {
@@ -75,7 +73,7 @@ resource "aws_lb_target_group" "kibana" {
   name     = "${format("%s-client-lb-tg-kibana", var.es_cluster)}"
   port     = 8080
   protocol = "HTTP"
-  vpc_id   = "${module.vpc.vpc_id}"
+  vpc_id   = "${var.vpc_id}"
 }
 
 resource "aws_autoscaling_attachment" "kibana" {

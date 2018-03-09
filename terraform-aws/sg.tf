@@ -1,12 +1,9 @@
 resource "aws_security_group" "elasticsearch_security_group" {
   name        = "elasticsearch-${var.es_cluster}-security-group"
   description = "Elasticsearch ports with ssh"
-  vpc_id      = "${module.vpc.vpc_id}"
+  vpc_id      = "${var.vpc_id}"
 
-  tags {
-    Name    = "${var.es_cluster}-elasticsearch-sg"
-    cluster = "${var.es_cluster}"
-  }
+  tags = "${merge(var.global_tags,map("Name","${var.es_cluster}-elasticsearch-sg"))}"
 
   ingress {
     from_port   = 22
@@ -44,18 +41,15 @@ resource "aws_security_group" "elasticsearch_security_group" {
 resource "aws_security_group" "elasticsearch_clients_security_group" {
   name        = "elasticsearch-${var.es_cluster}-clients-security-group"
   description = "Allows access to app ports from public subnets"
-  vpc_id      = "${module.vpc.vpc_id}"
+  vpc_id      = "${var.vpc_id}"
 
-  tags {
-    Name    = "${var.es_cluster}-client-sg"
-    cluster = "${var.es_cluster}"
-  }
+  tags = "${merge(var.global_tags,map("Name","${var.es_cluster}-client-sg"))}"
 
   ingress {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_public_subnets}"]
+    cidr_blocks = ["${var.vpc_public_subnets_cidrs}"]
     description = "Allow HTTP access to 8080 for Kibana from public subnets"
   }
 
@@ -63,7 +57,7 @@ resource "aws_security_group" "elasticsearch_clients_security_group" {
     from_port   = 3000
     to_port     = 3000
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_public_subnets}"]
+    cidr_blocks = ["${var.vpc_public_subnets_cidrs}"]
     description = "Allow HTTP access to 3000 for Grafana from public subnets"
   }
 
@@ -71,7 +65,7 @@ resource "aws_security_group" "elasticsearch_clients_security_group" {
     from_port   = 9200
     to_port     = 9200
     protocol    = "tcp"
-    cidr_blocks = ["${var.vpc_public_subnets}"]
+    cidr_blocks = ["${var.vpc_public_subnets_cidrs}"]
     description = "Allow HTTP access to 9200 for ES from public subnets"
   }
 
@@ -87,12 +81,9 @@ resource "aws_security_group" "elasticsearch_clients_security_group" {
 resource "aws_security_group" "elasticsearch_public_lb_security_group" {
   name        = "elasticsearch-${var.es_cluster}-public-lb-security-group"
   description = "Allows access to app ports for LB from the internet"
-  vpc_id      = "${module.vpc.vpc_id}"
+  vpc_id      = "${var.vpc_id}"
 
-  tags {
-    Name    = "${var.es_cluster}-public-lb-sg"
-    cluster = "${var.es_cluster}"
-  }
+  tags = "${merge(var.global_tags,map("Name","${var.es_cluster}-public-lb-sg"))}"
 
   ingress {
     from_port   = 80
