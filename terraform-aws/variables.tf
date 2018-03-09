@@ -7,39 +7,68 @@ variable "aws_region" {
   type = "string"
 }
 
+variable "global_tags" {
+  type    = "map"
+  default = {}
+}
+
 variable "vpc_id" {
-  description = "VPC ID to create the Elasticsearch cluster in"
-  type = "string"
+  description = "VPC ID."
+}
+
+variable "vpc_private_subnet_ids" {
+  description = "Private subnets ids to create."
+  type        = "list"
+}
+
+variable "vpc_public_subnet_ids" {
+  description = "Public subnets ids."
+  type        = "list"
+}
+
+variable "vpc_public_subnets_cidrs" {
+  description = "Private subnets cidrs (ie. ['10.0.1.0/24', '10.0.1.0/24'])"
+  type        = "list"
 }
 
 variable "availability_zones" {
-  type = "list"
   description = "AWS region to launch servers; if not set the available zones will be detected automatically"
-  default = []
+  type        = "list"
+  default     = ["us-east-1a", "us-east-1b"]
+}
+
+variable "admin_cidrs" {
+  description = "List of CIDRs to whitelist for SSH access"
+  type        = "list"
+  default     = []
 }
 
 variable "key_name" {
   description = "Key name to be used with the launched EC2 instances."
-  default = "elasticsearch"
 }
 
 variable "environment" {
   default = "default"
 }
 
-variable "data_instance_type" {
-  type = "string"
+variable "datas_instance_type" {
+  type    = "string"
   default = "c4.2xlarge"
 }
 
-variable "master_instance_type" {
-  type = "string"
-  default = "m4.large"
+variable "masters_instance_type" {
+  type    = "string"
+  default = "t2.medium"
+}
+
+variable "clients_instance_type" {
+  type    = "string"
+  default = "t2.medium"
 }
 
 variable "elasticsearch_volume_size" {
-  type = "string"
-  default = "100" # gb
+  type    = "string"
+  default = "100"    # gb
 }
 
 variable "volume_name" {
@@ -60,12 +89,12 @@ variable "elasticsearch_logs_dir" {
 
 # default elasticsearch heap size
 variable "data_heap_size" {
-  type = "string"
+  type    = "string"
   default = "7g"
 }
 
 variable "master_heap_size" {
-  type = "string"
+  type    = "string"
   default = "2g"
 }
 
@@ -95,6 +124,7 @@ variable "monitoring_enabled" {
 variable "client_user" {
   default = "exampleuser"
 }
+
 variable "client_pwd" {
   default = "changeme"
 }
