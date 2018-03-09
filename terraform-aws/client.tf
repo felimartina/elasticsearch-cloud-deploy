@@ -53,7 +53,14 @@ resource "aws_autoscaling_group" "client_nodes" {
   force_delete         = true
   launch_configuration = "${aws_launch_configuration.client.id}"
   vpc_zone_identifier  = ["${var.vpc_private_subnet_ids}"]
-  tags                 = "${merge(var.global_tags,map("Name","${format("%s-elasticsearch-client-node", var.es_cluster)}",map("Role","client")))}"
+
+  tags = ["${concat(
+    list(
+      map("key", "Name", "value", "${var.es_cluster}-elasticsearch-client-node", "propagate_at_launch", true),
+      map("key", "Role", "value", "client", "propagate_at_launch", true)
+    ),
+    var.global_tags_for_asg)
+  }"]
 
   lifecycle {
     create_before_destroy = true

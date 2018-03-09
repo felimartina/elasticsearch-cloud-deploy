@@ -8,7 +8,7 @@ resource "aws_lb" "es_client_lb" {
   internal           = false
   load_balancer_type = "application"
   idle_timeout       = 400
-  tags               = "${merge(var.global_tags,map("Name","${format("%s-client-lb", var.es_cluster)}"))}"
+  tags               = "${merge(var.global_tags,map("Name","${var.es_cluster}-elasticsearch-lb"))}"
 }
 
 resource "aws_lb_listener" "graphana" {

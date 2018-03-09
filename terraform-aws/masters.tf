@@ -47,7 +47,14 @@ resource "aws_autoscaling_group" "master_nodes" {
   force_delete         = true
   launch_configuration = "${aws_launch_configuration.master.id}"
   vpc_zone_identifier  = ["${var.vpc_private_subnet_ids}"]
-  tags                 = "${merge(var.global_tags,map("Name","${format("%s-elasticsearch-master-node", var.es_cluster)}",map("Role","master")))}"
+
+  tags = ["${concat(
+    list(
+      map("key", "Name", "value", "${var.es_cluster}-elasticsearch-master-node", "propagate_at_launch", true),
+      map("key", "Role", "value", "master", "propagate_at_launch", true)
+    ),
+    var.global_tags_for_asg)
+  }"]
 
   lifecycle {
     create_before_destroy = true

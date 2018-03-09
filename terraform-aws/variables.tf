@@ -12,6 +12,21 @@ variable "global_tags" {
   default = {}
 }
 
+variable "global_tags_for_asg" {
+  description = "There is a known issue in terraform where tags for ASG are provided diferently than tags for other resources. ASG tags should have key, value, and propagate_at_launch attributes."
+  type        = "list"
+  default     = []
+
+  # default = [
+  #   {
+  #     key = "Foo"
+  #     value = "Bar"
+  #     propagate_at_launch = true
+  #   },
+  #   ...
+  # ]
+}
+
 variable "vpc_id" {
   description = "VPC ID."
 }
