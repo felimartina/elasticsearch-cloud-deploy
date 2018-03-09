@@ -46,32 +46,8 @@ resource "aws_autoscaling_group" "master_nodes" {
   default_cooldown     = 30
   force_delete         = true
   launch_configuration = "${aws_launch_configuration.master.id}"
-
-  vpc_zone_identifier = ["${var.vpc_private_subnet_ids}"]
-
-  tag {
-    key                 = "Name"
-    value               = "${format("%s-master-node", var.es_cluster)}"
-    propagate_at_launch = true
-  }
-
-  tag {
-    key                 = "Environment"
-    value               = "${var.environment}"
-    propagate_at_launch = true
-  }
-
-  tag {
-    key                 = "Cluster"
-    value               = "${var.environment}-${var.es_cluster}"
-    propagate_at_launch = true
-  }
-
-  tag {
-    key                 = "Role"
-    value               = "master"
-    propagate_at_launch = true
-  }
+  vpc_zone_identifier  = ["${var.vpc_private_subnet_ids}"]
+  tags                 = "${merge(var.global_tags,map("Name","${format("%s-elasticsearch-master-node", var.es_cluster)}",map("Role","master")))}"
 
   lifecycle {
     create_before_destroy = true
