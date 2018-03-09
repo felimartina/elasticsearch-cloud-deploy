@@ -22,11 +22,11 @@ Edit `variables.tf` to specify the following:
 * `aws_region` - the region where to launch the cluster in.
 * `es_cluster` - the name of the Elasticsearch cluster to launch.
 * `key_name` - the name of the key to use - that key needs to be handy so you can access the machines if needed.
-* `vpc_cidr` - CIDR range for the vpc that is going to be created. Defaults to 10.0.0.0/16.
-* `vpc_private_subnets` - CIDR ranges for the private subnets to create. For example: ["10.0.1.0/24", "10.0.2.0/24"]. Number of CIDRs should match number of `availability_zones` to use.
-* `vpc_public_subnets` - CIDR ranges for the public subnets to create. For example: ["10.0.101.0/24", "10.0.102.0/24"]. Number of CIDRs should match number of `availability_zones` to use.
+* `vpc_id` - VPC id where instances should be launched. You can use this module to easily create a vpc: https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/1.26.0?tab=outputs
+* `vpc_public_subnet_ids` - IDs of the public subnets where ALB will be launched.
+* `vpc_public_subnets_cidrs` - CIDR ranges for the private subnets to create. For example: ["10.0.1.0/24", "10.0.2.0/24"]. Number of CIDRs should match number of `availability_zones` to use.
+* `vpc_private_subnet_ids` - IDs of the private subnets where master, data, and clients nodes will be launched.
 * `availability_zones` - at least 2 availability zones in that region.
-* `vpc_subnets` - the private subnet IDs within the VPC. The order in which you type these need to match the order of their availability zones as typed in `availability_zones` above.
 
 The rest of the configurations are mostly around cluster topology and  machine types and sizes.
 
