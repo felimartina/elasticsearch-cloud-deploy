@@ -27,7 +27,7 @@ resource "aws_launch_configuration" "client" {
   // Only create if it's not a single-node configuration
   count = "${var.masters_count == "0" && var.datas_count == "0" ? "0" : "1"}"
 
-  name_prefix                 = "elasticsearch-${var.es_cluster}-client-nodes"
+  name_prefix                 = "${var.es_cluster}-elasticsearch-client-launch-conf"
   image_id                    = "${data.aws_ami.kibana_client.id}"
   instance_type               = "${var.clients_instance_type}"
   security_groups             = ["${aws_security_group.elasticsearch_security_group.id}", "${aws_security_group.elasticsearch_clients_security_group.id}"]
@@ -45,7 +45,7 @@ resource "aws_autoscaling_group" "client_nodes" {
   // Only create if it's not a single-node configuration
   count = "${var.masters_count == "0" && var.datas_count == "0" ? "0" : "1"}"
 
-  name                 = "elasticsearch-${var.es_cluster}-client-nodes"
+  name                 = "${var.es_cluster}-elasticsearch-client-asg"
   max_size             = "${var.clients_count}"
   min_size             = "${var.clients_count}"
   desired_capacity     = "${var.clients_count}"

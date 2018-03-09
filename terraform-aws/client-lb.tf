@@ -1,8 +1,8 @@
-resource "aws_lb" "es_client_lb" {
+resource "aws_lb" "elasticsearch_lb" {
   // Only create an ELB if it's not a single-node configuration
   count = "${var.masters_count == "0" && var.datas_count == "0" ? "0" : "1"}"
 
-  name               = "${format("%s-client-lb", var.es_cluster)}"
+  name               = "${format("%s-elasticsearch-lb", var.es_cluster)}"
   security_groups    = ["${aws_security_group.elasticsearch_public_lb_security_group.id}"]
   subnets            = ["${var.vpc_public_subnet_ids}"]
   internal           = false
@@ -12,7 +12,7 @@ resource "aws_lb" "es_client_lb" {
 }
 
 resource "aws_lb_listener" "graphana" {
-  load_balancer_arn = "${aws_lb.es_client_lb.arn}"
+  load_balancer_arn = "${aws_lb.elasticsearch_lb.arn}"
   port              = "3000"
   protocol          = "HTTP"
 
@@ -23,7 +23,7 @@ resource "aws_lb_listener" "graphana" {
 }
 
 resource "aws_lb_target_group" "graphana" {
-  name     = "${format("%s-client-lb-tg-graphana", var.es_cluster)}"
+  name     = "${format("%s-es-lb-tg-graphana", var.es_cluster)}"
   port     = 3000
   protocol = "HTTP"
   vpc_id   = "${var.vpc_id}"
@@ -35,7 +35,7 @@ resource "aws_autoscaling_attachment" "graphana" {
 }
 
 resource "aws_lb_listener" "es" {
-  load_balancer_arn = "${aws_lb.es_client_lb.arn}"
+  load_balancer_arn = "${aws_lb.elasticsearch_lb.arn}"
   port              = "9200"
   protocol          = "HTTP"
 
@@ -46,7 +46,7 @@ resource "aws_lb_listener" "es" {
 }
 
 resource "aws_lb_target_group" "es" {
-  name     = "${format("%s-client-lb-tg-es", var.es_cluster)}"
+  name     = "${format("%s-es-lb-tg-es", var.es_cluster)}"
   port     = 9200
   protocol = "HTTP"
   vpc_id   = "${var.vpc_id}"
@@ -58,7 +58,7 @@ resource "aws_autoscaling_attachment" "es" {
 }
 
 resource "aws_lb_listener" "kibana" {
-  load_balancer_arn = "${aws_lb.es_client_lb.arn}"
+  load_balancer_arn = "${aws_lb.elasticsearch_lb.arn}"
   port              = "80"
   protocol          = "HTTP"
 
@@ -69,7 +69,7 @@ resource "aws_lb_listener" "kibana" {
 }
 
 resource "aws_lb_target_group" "kibana" {
-  name     = "${format("%s-client-lb-tg-kibana", var.es_cluster)}"
+  name     = "${format("%s-es-lb-tg-kibana", var.es_cluster)}"
   port     = 8080
   protocol = "HTTP"
   vpc_id   = "${var.vpc_id}"

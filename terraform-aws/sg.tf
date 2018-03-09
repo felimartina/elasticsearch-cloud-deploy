@@ -1,6 +1,6 @@
 resource "aws_security_group" "elasticsearch_security_group" {
-  name        = "elasticsearch-${var.es_cluster}-security-group"
-  description = "Elasticsearch ports with ssh"
+  name        = "${var.es_cluster}-elasticsearch-security-group"
+  description = "SG for nodes in private subnets. Allows for intercluster communication."
   vpc_id      = "${var.vpc_id}"
 
   tags = "${merge(var.global_tags,map("Name","${var.es_cluster}-elasticsearch-sg"))}"
@@ -39,7 +39,7 @@ resource "aws_security_group" "elasticsearch_security_group" {
 }
 
 resource "aws_security_group" "elasticsearch_clients_security_group" {
-  name        = "elasticsearch-${var.es_cluster}-clients-security-group"
+  name        = "${var.es_cluster}-elasticsearch-clients-sg"
   description = "Allows access to app ports from public subnets"
   vpc_id      = "${var.vpc_id}"
   tags        = "${merge(var.global_tags,map("Name","${var.es_cluster}-client-sg"))}"
@@ -78,7 +78,7 @@ resource "aws_security_group" "elasticsearch_clients_security_group" {
 }
 
 resource "aws_security_group" "elasticsearch_public_lb_security_group" {
-  name        = "elasticsearch-${var.es_cluster}-public-lb-security-group"
+  name        = "${var.es_cluster}-elasticsearch-public-lb-sg"
   description = "Allows access to app ports for LB from the internet"
   vpc_id      = "${var.vpc_id}"
 

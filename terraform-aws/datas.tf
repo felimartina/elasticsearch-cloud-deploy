@@ -24,7 +24,7 @@ data "template_file" "data_userdata_script" {
 }
 
 resource "aws_launch_configuration" "data" {
-  name_prefix                 = "elasticsearch-${var.es_cluster}-data-nodes"
+  name_prefix                 = "${var.es_cluster}-elasticsearch-data-launch-conf"
   image_id                    = "${data.aws_ami.elasticsearch.id}"
   instance_type               = "${var.datas_instance_type}"
   security_groups             = ["${aws_security_group.elasticsearch_security_group.id}"]
@@ -47,7 +47,7 @@ resource "aws_launch_configuration" "data" {
 }
 
 resource "aws_autoscaling_group" "data_nodes" {
-  name                 = "elasticsearch-${var.es_cluster}-data-nodes"
+  name                 = "${var.es_cluster}-elasticsearch-data-asg"
   max_size             = "${var.datas_count}"
   min_size             = "${var.datas_count}"
   desired_capacity     = "${var.datas_count}"
@@ -94,7 +94,7 @@ resource "aws_cloudwatch_metric_alarm" "data_nodes_monitor_scale_out" {
   actions_enabled     = true
   alarm_actions       = ["${aws_autoscaling_policy.data_nodes_scale_out.arn}"]
   alarm_description   = "Monitors ES data nodes CPU Utilization"
-  alarm_name          = "elasticsearch-${var.es_cluster}-data-nodes-asg-monitor-scale_out"
+  alarm_name          = "${var.es_cluster}-elasticsearch-data-asg-monitor-scale_out"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
@@ -114,7 +114,7 @@ resource "aws_cloudwatch_metric_alarm" "data_nodes_monitor_scale_in" {
   actions_enabled     = true
   alarm_actions       = ["${aws_autoscaling_policy.data_nodes_scale_in.arn}"]
   alarm_description   = "Monitors ES data nodes CPU Utilization"
-  alarm_name          = "elasticsearch-${var.es_cluster}-data-nodes-asg-monitor-scale-in"
+  alarm_name          = "${var.es_cluster}-elasticsearch-data-asg-monitor-scale-in"
   comparison_operator = "LessThanOrEqualToThreshold"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/EC2"
